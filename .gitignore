@@ -1,0 +1,11 @@
+bin/
+collmex.ini
+current_members
+diskussion_already_sub
+diskussion_already_sub_frommails
+diskussion_current
+diskussion_new_members
+include/
+lib/
+local/
+syncout
