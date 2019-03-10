@@ -1,12 +1,12 @@
-#!/home/nilo/mitgliedersync/bin/python
-#coding:utf8
-import subprocess
+#!/home/sync_ml/collmex2mailman/bin/python
 from gocept.collmex.collmex import Collmex
 from gocept.collmex.model import Member
+import configparser
+import io 
 import logging
-import StringIO
-import ConfigParser
+import subprocess
 import traceback
+
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -32,22 +32,22 @@ for mem in members:
     mail = mem.get('E-Mail')
     if mail is None:
         wo_mail += 1
-        log.warn(u'Member <{} {}> has no mail address.'.format(
+        log.warn('Member <{} {}> has no mail address.'.format(
             mem.get('Vorname'), mem.get('Name')))
-        mems_wo_mail.append('{} {}'.format(mem.get('Vorname'), mem.get('Name')))
+        mems_wo_mail.append('{} {}'.format(mem.get('Vorname'), mem.get('Name')))
         continue
-    mconfig = ConfigParser.ConfigParser()
+    mconfig = configparser.ConfigParser()
     try:
-        mconfig.readfp(StringIO.StringIO(mem.get('Bemerkung')))
+        mconfig.readfp(io.StringIO(mem.get('Bemerkung')))
     except ConfigParser.Error as exc:
         log.warn(
-           u'Member <{} {}> has invalid data in Bemerkung field.'
-           u'\n{}'.format(
+           'Member <{} {}> has invalid data in Bemerkung field.'
+           '\n{}'.format(
                mem.get('Vorname'),
                mem.get('Name'), str(exc)
            )
         )
-        mconfig.readfp(StringIO.StringIO(DEFAULT_INI))    
+        mconfig.readfp(io.StringIO(DEFAULT_INI))    
     diskussion_opt_out = False
     if mconfig.has_section('mailinglists') and 'diskussion_opt_out' in [k for k,v in  mconfig.items('mailinglists')]:
         diskussion_opt_out = mconfig.getboolean('mailinglists', 'diskussion_opt_out', default=False)

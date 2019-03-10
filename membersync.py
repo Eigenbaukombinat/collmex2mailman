@@ -1,12 +1,12 @@
-#!/home/nilo/mitgliedersync/bin/python
-#coding:utf8
-import subprocess
+#!/home/sync_ml/collmex2mailman/bin/python
 from gocept.collmex.collmex import Collmex
 from gocept.collmex.model import Member
+import configparser
+import io
 import logging
-import StringIO
-import ConfigParser
+import subprocess
 import traceback
+
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -34,22 +34,22 @@ for mem in members:
     mail = mem.get('E-Mail')
     if mail is None:
         wo_mail += 1
-        log.warn(u'Member <{} {}> has no mail address.'.format(
+        log.warn('Member <{} {}> has no mail address.'.format(
             mem.get('Vorname'), mem.get('Name')))
-        mems_wo_mail.append('{} {}'.format(mem.get('Vorname'), mem.get('Name')))
+        mems_wo_mail.append('{} {}'.format(mem.get('Vorname'), mem.get('Name')))
         continue
-    mconfig = ConfigParser.ConfigParser()
+    mconfig = configparser.ConfigParser()
     try:
-        mconfig.readfp(StringIO.StringIO(mem.get('Bemerkung')))
+        mconfig.readfp(io.StringIO(mem.get('Bemerkung')))
     except ConfigParser.Error as exc:
         log.warn(
-           u'Member <{} {}> has invalid data in Bemerkung field.'
-           u'\n{}'.format(
+           'Member <{} {}> has invalid data in Bemerkung field.'
+           '\n{}'.format(
                mem.get('Vorname'),
                mem.get('Name'), str(exc)
            )
         )
-        mconfig.readfp(StringIO.StringIO(DEFAULT_INI))    
+        mconfig.readfp(io.StringIO(DEFAULT_INI))    
     unmod = False
     if mconfig.has_section('mailinglists'):
         unmod = mconfig.getboolean('mailinglists', 'can_post_to_mitglieder')
@@ -61,7 +61,7 @@ for mem in members:
 
 with open('current_members', 'w') as cm:
     for m in all_mems:
-        cm.write(m + u'\n')
+        cm.write(m + '\n')
 
 subprocess.call([
     '/var/lib/mailman/bin/sync_members',
@@ -71,7 +71,7 @@ subprocess.call([
 
 for m in moderated:
     subprocess.call([
-        '/usr/lib/mailman/bin/withlist',
+        '/var/lib/mailman/bin/withlist',
         '-r',
         'set_mod',
         'mitglieder',
@@ -80,7 +80,7 @@ for m in moderated:
         
 for m in unmoderated:
     subprocess.call([
-        '/usr/lib/mailman/bin/withlist',
+        '/var/lib/mailman/bin/withlist',
         '-r',
         'set_mod',
         'mitglieder',
@@ -88,7 +88,7 @@ for m in unmoderated:
         m])
         
 if wo_mail > 0:
-    log.warn(u'Found {} members without mail addresses:'.format(wo_mail))
+    log.warn('Found {} members without mail addresses:'.format(wo_mail))
     for mem in mems_wo_mail:
         log.warn(mem)
-log.warn(u'List now has {} members, {} of them unmoderated.'.format(len(all_mems), len(unmoderated)))
+log.warn('List now has {} members, {} of them unmoderated.'.format(len(all_mems), len(unmoderated)))

@@ -2,6 +2,7 @@ mitgliedersync
 ==============
 
 Scripts to sync members of "collmex verein" to mailman mailinglists.
+Big thanks to Mark Sapiro for the set_mod.py script!
 
 
 Installation
@@ -12,6 +13,9 @@ Create a virtualenv with python2 and install dependencies::
     $ virtualenv --python=python2 .
     $ bin/pip install -r requirements.txt
 
+Copy the utility for setting mod status to /var/lib/mailman/bin::
+
+    $ cp set_mod.py /var/lib/mailman/bin
 
 Setup
 -----

@@ -10,3 +10,5 @@ lib/
 local/
 syncout
 pyvenv.cfg
+share/
+lib64
