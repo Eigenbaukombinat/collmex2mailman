@@ -39,7 +39,7 @@ for mem in members:
     mconfig = configparser.ConfigParser()
     try:
         mconfig.readfp(io.StringIO(mem.get('Bemerkung')))
-    except ConfigParser.Error as exc:
+    except configparser.Error as exc:
         log.warn(
            'Member <{} {}> has invalid data in Bemerkung field.'
            '\n{}'.format(
